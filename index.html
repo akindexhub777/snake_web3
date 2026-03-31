@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Snake Web3 🐍</title>
+  <style>
+    body { text-align: center; background: black; color: white; }
+    canvas { background: #111; margin-top: 20px; }
+    button { padding: 10px; margin: 10px; }
+  </style>
+</head>
+<body>
+
+<h1>🐍 Snake Web3</h1>
+
+<button onclick="startGame()">Start Game</button>
+<button onclick="eatFood()">Eat (Simulate)</button>
+
+<p>Score: <span id="score">0</span></p>
+
+<canvas id="game" width="400" height="400"></canvas>
+
+<script>
+const canvas = document.getElementById("game")
+const ctx = canvas.getContext("2d")
+
+let snake = [{x:10,y:10}]
+let food = {x:5,y:5}
+let dx = 1, dy = 0
+let score = 0
+
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowUp") { dx=0; dy=-1 }
+  if (e.key === "ArrowDown") { dx=0; dy=1 }
+  if (e.key === "ArrowLeft") { dx=-1; dy=0 }
+  if (e.key === "ArrowRight") { dx=1; dy=0 }
+})
+
+function gameLoop() {
+  let head = {x: snake[0].x + dx, y: snake[0].y + dy}
+  snake.unshift(head)
+
+  if (head.x === food.x && head.y === food.y) {
+    score++
+    document.getElementById("score").innerText = score
+    eatFood() // call blockchain
+    food = {x: Math.floor(Math.random()*20), y: Math.floor(Math.random()*20)}
+  } else {
+    snake.pop()
+  }
+
+  ctx.fillStyle = "black"
+  ctx.fillRect(0,0,400,400)
+
+  ctx.fillStyle = "lime"
+  snake.forEach(s => ctx.fillRect(s.x*20, s.y*20, 18, 18))
+
+  ctx.fillStyle = "red"
+  ctx.fillRect(food.x*20, food.y*20, 18, 18)
+}
+
+setInterval(gameLoop, 150)
+
+// ===== Web3 (placeholder GenLayer) =====
+
+async function startGame() {
+  console.log("Start game (call contract)")
+}
+
+async function eatFood() {
+  console.log("Eat food (call contract)")
+}
+</script>
+
+</body>
+</html>
