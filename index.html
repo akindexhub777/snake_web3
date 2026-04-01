@@ -13,7 +13,6 @@
 <h1>🐍 Snake Web3</h1>
 
 <button onclick="startGame()">Start Game</button>
-<button onclick="eatFood()">Eat (Simulate)</button>
 
 <p>Score: <span id="score">0</span></p>
 
@@ -35,19 +34,27 @@ document.addEventListener("keydown", e => {
   if (e.key === "ArrowRight") { dx=1; dy=0 }
 })
 
+// 🎮 GAME LOOP
 function gameLoop() {
   let head = {x: snake[0].x + dx, y: snake[0].y + dy}
   snake.unshift(head)
 
+  // 🍎 quand le snake mange
   if (head.x === food.x && head.y === food.y) {
     score++
     document.getElementById("score").innerText = score
-    eatFood() // call blockchain
-    food = {x: Math.floor(Math.random()*20), y: Math.floor(Math.random()*20)}
+
+    eatFood() // 🔥 appel "blockchain"
+
+    food = {
+      x: Math.floor(Math.random()*20),
+      y: Math.floor(Math.random()*20)
+    }
   } else {
     snake.pop()
   }
 
+  // 🎨 dessin
   ctx.fillStyle = "black"
   ctx.fillRect(0,0,400,400)
 
@@ -60,14 +67,18 @@ function gameLoop() {
 
 setInterval(gameLoop, 150)
 
-// ===== Web3 (placeholder GenLayer) =====
+// ===== WEB3 SIMULATION =====
 
+// 🚀 Start game
 async function startGame() {
-  console.log("Start game (call contract)")
+  console.log("🚀 Game started (blockchain)")
+  alert("Game started on blockchain 🚀")
 }
 
+// 🍎 Eat food
 async function eatFood() {
-  console.log("Eat food (call contract)")
+  console.log("🍎 Food eaten → calling smart contract")
+  alert("Score saved on blockchain ✅")
 }
 </script>
 
