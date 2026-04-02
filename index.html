@@ -2,586 +2,414 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Snake Web3 🌦️ | GenLayer IA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snake Web3 — GenLayer</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background: #0a0a0f;
-      color: #e0e0e0;
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-      min-height: 100vh;
-    }
-    h1 { color: #a78bfa; font-size: 28px; margin-bottom: 4px; }
-    .subtitle { color: #555; font-size: 12px; margin-bottom: 20px; }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#0a0a0f;color:#e0e0e0;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:16px;min-height:100vh}
+    h1{color:#a78bfa;font-size:26px;margin-bottom:2px}
+    .sub{color:#555;font-size:11px;margin-bottom:14px}
 
-    .wallet-box {
-      background: #111128;
-      border: 1px solid #2d2d4e;
-      border-radius: 10px;
-      padding: 12px 20px;
-      margin-bottom: 16px;
-      text-align: center;
-      width: 100%;
-      max-width: 420px;
-    }
-    #walletAddr { font-size: 11px; color: #7c3aed; word-break: break-all; margin-top: 4px; }
+    .wallet-box{background:#111128;border:1px solid #2d2d4e;border-radius:10px;padding:10px 16px;margin-bottom:12px;width:100%;max-width:440px;text-align:center}
+    #walletAddr{font-size:11px;color:#7c3aed;word-break:break-all;margin-top:4px;min-height:16px}
+    #networkBadge{font-size:10px;margin-top:3px;min-height:14px}
 
-    .weather {
-      background: #111128;
-      border: 1px solid #2d2d4e;
-      border-radius: 10px;
-      padding: 6px 12px;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      font-size: 14px;
-    }
-    .weather-icon { font-size: 28px; }
-    .weather-effect { color: #f59e0b; font-weight: bold; }
+    .stats{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;justify-content:center}
+    .stat{background:#111128;border:1px solid #2d2d4e;border-radius:8px;padding:8px 14px;text-align:center;min-width:80px}
+    .stat-label{font-size:10px;color:#666}
+    .stat-val{font-size:18px;font-weight:bold}
+    .sv-purple{color:#a78bfa}.sv-gold{color:#f59e0b}.sv-green{color:#10b981}.sv-blue{color:#38bdf8}
 
-    .stats {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .stat {
-      background: #111128;
-      border: 1px solid #2d2d4e;
-      border-radius: 8px;
-      padding: 10px 16px;
-      text-align: center;
-    }
-    .stat-label { font-size: 11px; color: #666; }
-    .stat-val { font-size: 20px; font-weight: bold; }
-    .stat-val.purple { color: #a78bfa; }
-    .stat-val.gold { color: #f59e0b; }
-    .stat-val.green { color: #10b981; }
+    canvas{border:2px solid #2d2d4e;border-radius:10px;display:block;background:#0d0d1a}
 
-    canvas {
-      border: 2px solid #2d2d4e;
-      border-radius: 10px;
-      display: block;
-      background: #0d0d1a;
-    }
+    .controls{display:flex;gap:6px;margin:10px 0;flex-wrap:wrap;justify-content:center}
+    button{padding:8px 16px;border-radius:8px;border:1px solid #2d2d4e;background:#111128;color:#e0e0e0;cursor:pointer;font-size:12px;transition:all .2s}
+    button:hover{background:#1e1e3f;border-color:#7c3aed}
+    button:disabled{opacity:.4;cursor:not-allowed}
+    .btn-primary{background:#7c3aed;border-color:#7c3aed;color:#fff}
+    .btn-primary:hover{background:#6d28d9}
+    .btn-gold{background:#92400e;border-color:#f59e0b;color:#fde68a}
+    .btn-gold:hover{background:#78350f}
+    .btn-green{background:#065f46;border-color:#10b981;color:#6ee7b7}
+    .btn-green:hover{background:#047857}
 
-    .controls { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; justify-content: center; }
-    button {
-      padding: 9px 18px;
-      border-radius: 8px;
-      border: 1px solid #2d2d4e;
-      background: #111128;
-      color: #e0e0e0;
-      cursor: pointer;
-      font-size: 13px;
-      transition: all 0.2s;
-    }
-    button:hover { background: #1e1e3f; border-color: #7c3aed; }
-    button.primary { background: #7c3aed; border-color: #7c3aed; color: #fff; }
-    button.primary:hover { background: #6d28d9; }
-    button.gold { background: #92400e; border-color: #f59e0b; color: #fde68a; }
-    button.gold:hover { background: #78350f; }
+    #msg{font-size:12px;color:#f59e0b;min-height:18px;margin:4px 0;text-align:center;max-width:440px}
+    #chainMsg{font-size:11px;color:#38bdf8;min-height:16px;text-align:center;margin-bottom:4px}
 
-    #msg { font-size: 12px; color: #f59e0b; min-height: 18px; margin: 6px 0; text-align: center; }
+    .nft-badge{display:none;background:#064e3b;border:1px solid #10b981;border-radius:8px;padding:8px 16px;text-align:center;margin:6px 0;color:#10b981;font-weight:bold;font-size:13px}
+    .nft-badge.show{display:block}
 
-    .nft-badge {
-      display: none;
-      background: #064e3b;
-      border: 1px solid #10b981;
-      border-radius: 8px;
-      padding: 10px 20px;
-      text-align: center;
-      margin: 8px 0;
-      color: #10b981;
-      font-weight: bold;
-    }
-    .nft-badge.show { display: block; }
+    .lb-card{background:#111128;border:1px solid #2d2d4e;border-radius:10px;padding:12px;width:100%;max-width:440px;margin-top:10px}
+    .lb-card h3{font-size:11px;color:#7c3aed;text-transform:uppercase;margin-bottom:8px;letter-spacing:1px}
+    .lb-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 6px;border-radius:5px;margin-bottom:3px}
+    .lb-row:first-child{background:#2d1a4e}
+    .lb-addr{color:#888;flex:1;margin:0 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .lb-score{font-weight:bold;color:#a78bfa}
 
-    .leaderboard {
-      background: #111128;
-      border: 1px solid #2d2d4e;
-      border-radius: 10px;
-      padding: 12px;
-      width: 100%;
-      max-width: 420px;
-      margin-top: 12px;
-    }
-    .leaderboard h3 { font-size: 12px; color: #7c3aed; text-transform: uppercase; margin-bottom: 8px; }
-    .lb-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      padding: 4px 6px;
-      border-radius: 5px;
-      margin-bottom: 4px;
-    }
-    .lb-row:first-child { background: #2d1a4e; }
-    .lb-addr { color: #888; flex: 1; margin: 0 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .lb-score { font-weight: bold; color: #a78bfa; }
+    .dpad{display:none;flex-direction:column;align-items:center;gap:4px;margin-top:8px}
+    .dpad-row{display:flex;gap:4px}
+    .dpad button{width:48px;height:48px;font-size:18px;padding:0}
+    @media(max-width:480px){.dpad{display:flex}}
 
-    .dpad { display: none; flex-direction: column; align-items: center; gap: 4px; margin-top: 10px; }
-    .dpad-row { display: flex; gap: 4px; }
-    .dpad button { width: 50px; height: 50px; font-size: 18px; }
-    @media (max-width: 500px) { .dpad { display: flex; } }
+    .tx-log{background:#0d0d1a;border:1px solid #1e1e3f;border-radius:8px;padding:8px;width:100%;max-width:440px;margin-top:8px;font-size:10px;color:#555;max-height:80px;overflow-y:auto;font-family:monospace}
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
 </head>
 <body>
 
 <h1>🐍 Snake Web3</h1>
-<p class="subtitle">🌦️ IA Météo GenLayer · 1 transaction par partie</p>
+<p class="sub">On-chain scoring · GenLayer Studionet · Hackathon 2026</p>
 
+<!-- Wallet -->
 <div class="wallet-box">
   <div id="walletAddr">Non connecté</div>
-  <button class="primary" id="connectBtn" style="margin-top:8px;width:100%">🔗 Connect Wallet (MetaMask / Rabby)</button>
+  <div id="networkBadge"></div>
+  <button class="btn-primary" onclick="connectWallet()" style="margin-top:8px;width:100%">
+    🔗 Connect Wallet (MetaMask / Rabby)
+  </button>
 </div>
 
-<div class="weather" id="weatherPanel">
-  <span class="weather-icon" id="weatherIcon">🌍</span>
-  <span id="weatherDesc">Chargement météo...</span>
-  <span class="weather-effect" id="weatherEffect"></span>
-</div>
-
+<!-- Stats -->
 <div class="stats">
-  <div class="stat"><div class="stat-label">Score</div><div class="stat-val purple" id="dispScore">0</div></div>
-  <div class="stat"><div class="stat-label">High Score</div><div class="stat-val purple" id="dispHigh">0</div></div>
-  <div class="stat"><div class="stat-label">Tokens 🪙</div><div class="stat-val gold" id="dispTokens">0</div></div>
-  <div class="stat"><div class="stat-label">Reward</div><div class="stat-val green" id="dispReward">0</div></div>
+  <div class="stat"><div class="stat-label">Score</div><div class="stat-val sv-purple" id="dispScore">0</div></div>
+  <div class="stat"><div class="stat-label">High Score</div><div class="stat-val sv-purple" id="dispHigh">0</div></div>
+  <div class="stat"><div class="stat-label">Tokens 🪙</div><div class="stat-val sv-gold" id="dispTokens">0</div></div>
+  <div class="stat"><div class="stat-label">On-chain 🔗</div><div class="stat-val sv-blue" id="dispChain">—</div></div>
 </div>
 
-<div class="nft-badge" id="nftBadge">🏆 NFT REWARD DÉBLOQUÉ — Score ≥ 10 atteint !</div>
+<!-- NFT Badge -->
+<div class="nft-badge" id="nftBadge">🏆 NFT REWARD DÉBLOQUÉ — Score ≥ 10 !</div>
 
+<!-- Boutons -->
 <div class="controls">
-  <button class="primary" id="startBtn">▶ Start</button>
-  <button id="pauseBtn">⏸ Pause</button>
-  <button id="resetBtn">↺ Reset</button>
-  <button class="gold" id="claimBtn">💰 Claim Reward</button>
+  <button class="btn-primary" id="btnStart" onclick="startGame()">▶ Start</button>
+  <button id="btnPause" onclick="pauseGame()">⏸ Pause</button>
+  <button onclick="resetGame()">↺ Reset</button>
+  <button class="btn-gold" onclick="claimReward()">💰 Claim Reward</button>
+  <button class="btn-green" onclick="loadOnChainScore()">🔗 Sync Score</button>
 </div>
 
 <div id="msg">Connecte ton wallet puis appuie sur Start</div>
+<div id="chainMsg"></div>
 
+<!-- Canvas -->
 <canvas id="game" width="400" height="400"></canvas>
 
+<!-- D-pad mobile -->
 <div class="dpad">
-  <div class="dpad-row"><button class="dir-btn" data-dx="0" data-dy="-1">↑</button></div>
+  <div class="dpad-row"><button onclick="setDir(0,-1)">↑</button></div>
   <div class="dpad-row">
-    <button class="dir-btn" data-dx="-1" data-dy="0">←</button>
-    <button class="dir-btn" data-dx="0" data-dy="1">↓</button>
-    <button class="dir-btn" data-dx="1" data-dy="0">→</button>
+    <button onclick="setDir(-1,0)">←</button>
+    <button onclick="setDir(0,1)">↓</button>
+    <button onclick="setDir(1,0)">→</button>
   </div>
 </div>
 
-<div class="leaderboard">
-  <h3>🏆 Leaderboard</h3>
-  <div id="leaderboard"><div style="font-size:12px;color:#555;text-align:center">Joue pour apparaître ici</div></div>
+<!-- Leaderboard -->
+<div class="lb-card">
+  <h3>🏆 Leaderboard (local)</h3>
+  <div id="leaderboard"><div style="font-size:11px;color:#555;text-align:center">Joue pour apparaître ici</div></div>
 </div>
 
+<!-- TX Log -->
+<div class="tx-log" id="txLog">[ Transaction log ]</div>
+
+<!-- ═══════════════ ETHERS v5 CDN ═══════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+
 <script>
-  // ---------- CONFIGURATION GENLAYER (ethers) ----------
-  // ⚠️ REMPLACE PAR LA VRAIE ADRESSE DE TON CONTRAT DÉPLOYÉ
-  const CONTRACT_ADDR = "0x6e8756d8e0E17B21Af3e695409fE0d3542674d0e";
-  const ABI = [
-    "function submit_score(uint256 final_score) external",
-    "function get_score(address player) view returns (uint256)",
-    "function claim_reward() external",
-    "function get_reward(address player) view returns (uint256)"
-  ];
+// ══════════════════════════════════════════════
+//  CONFIG — Contrat déployé sur GenLayer Studionet
+// ══════════════════════════════════════════════
+const CONTRACT_ADDR = "0x005158bfAf3708902E5eCd15BA79e835EDB82Bc5";
+const CHAIN_ID      = 61999;   // GenLayer Studionet
+const RPC_URL       = "https://rpc.studionet.genlayer.com";
 
-  let provider, signer, contract;
-  let walletAddress = null;
+// ABI minimal — fonctions utilisées
+const ABI = [
+  "function submit_score(uint256 final_score) external",
+  "function claim_reward() external",
+  "function reset_game() external",
+  "function get_score(string player_str) view returns (uint256)",
+  "function get_high_score(string player_str) view returns (uint256)",
+  "function get_reward(string player_str) view returns (uint256)"
+];
 
-  // ---------- Météo ----------
-  let currentWeather = { condition: "sunny", temp: 20, icon: "☀️", effect: "Vitesse normale" };
-  let weatherInterval = null;
-  let foodMoveInterval = null;
-  let invertedControls = false;
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+const GRID = 20, CELL = 400 / GRID;
+const canvas = document.getElementById('game');
+const ctx    = canvas.getContext('2d');
 
-  async function fetchWeather() {
-    try {
-      const res = await fetch('https://wttr.in/?format=%C|%t');
-      const text = await res.text();
-      const [condition, tempStr] = text.split('|');
-      const temp = parseInt(tempStr.replace('+', '').replace('°C', '')) || 20;
-      
-      let icon = "☀️";
-      let effect = "";
-      let weatherType = "sunny";
-      
-      const cond = condition.toLowerCase();
-      if (cond.includes('rain') || cond.includes('drizzle')) {
-        icon = "🌧️";
-        effect = "Nourriture instable !";
-        weatherType = "rainy";
-      } else if (cond.includes('snow') || cond.includes('ice')) {
-        icon = "❄️";
-        effect = "Serpent ralenti ❄️";
-        weatherType = "snow";
-      } else if (cond.includes('wind')) {
-        icon = "🌬️";
-        effect = "Contrôles inversés !";
-        weatherType = "windy";
-      } else {
-        icon = "☀️";
-        effect = "Vitesse normale";
-        weatherType = "sunny";
-      }
-      
-      currentWeather = { condition: weatherType, temp, icon, effect };
-      updateWeatherUI();
-      applyWeatherEffect();
-    } catch(e) {
-      console.warn("Météo non disponible", e);
-      currentWeather = { condition: "sunny", temp: 20, icon: "☀️", effect: "Vitesse normale" };
-      updateWeatherUI();
-    }
-  }
+let snake, dir, food, score, highScore, tokens, nftUnlocked;
+let gameLoop, running, paused;
+let walletAddress = null;
+let provider = null, signer = null, contract = null;
+let leaderboard = JSON.parse(localStorage.getItem('snakeLB') || '[]');
 
-  function updateWeatherUI() {
-    document.getElementById('weatherIcon').textContent = currentWeather.icon;
-    document.getElementById('weatherDesc').innerHTML = `${currentWeather.temp}°C · ${currentWeather.icon === '☀️' ? 'Beau temps' : currentWeather.icon === '🌧️' ? 'Pluie' : currentWeather.icon === '❄️' ? 'Neige' : 'Vent'}`;
-    document.getElementById('weatherEffect').textContent = currentWeather.effect;
-  }
+// ══════════════════════════════════════════════
+//  WALLET & CONTRACT
+// ══════════════════════════════════════════════
+async function connectWallet() {
+  if (!window.ethereum) { setMsg('MetaMask / Rabby non détecté !'); return; }
+  try {
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer   = provider.getSigner();
+    walletAddress = await signer.getAddress();
 
-  function applyWeatherEffect() {
-    if (running && gameLoop) {
-      let newSpeed = 130;
-      if (currentWeather.condition === 'snow') newSpeed = 170;
-      clearInterval(gameLoop);
-      gameLoop = setInterval(tick, newSpeed);
-    }
-    invertedControls = (currentWeather.condition === 'windy');
-    
-    if (foodMoveInterval) clearInterval(foodMoveInterval);
-    if (currentWeather.condition === 'rainy' && running) {
-      foodMoveInterval = setInterval(() => {
-        if (running && !paused) { spawnFood(); draw(); }
-      }, 3000);
-    }
-  }
+    document.getElementById('walletAddr').textContent =
+      walletAddress.slice(0,6) + '...' + walletAddress.slice(-4) + ' ✓';
 
-  // ---------- DOM elements ----------
-  const canvas = document.getElementById('game');
-  const ctx = canvas.getContext('2d');
-  const GRID = 20;
-  const CELL = 400 / GRID;
-
-  let snake, dir, food, score, highScore, tokens, reward, nftUnlocked;
-  let gameLoop, running, paused;
-  let leaderboard = JSON.parse(localStorage.getItem('snakeLB') || '[]');
-
-  function updateUI() {
-    document.getElementById('dispScore').textContent = score;
-    document.getElementById('dispHigh').textContent = highScore;
-    document.getElementById('dispTokens').textContent = tokens;
-    document.getElementById('dispReward').textContent = reward;
-    if (nftUnlocked) document.getElementById('nftBadge').classList.add('show');
-  }
-
-  function setMsg(msg, isError = false) {
-    const msgDiv = document.getElementById('msg');
-    msgDiv.textContent = msg;
-    if (isError) setTimeout(() => {
-      if (msgDiv.textContent === msg) msgDiv.textContent = "Connecte ton wallet puis appuie sur Start";
-    }, 3000);
-  }
-
-  function initState() {
-    snake = [{x:10,y:10},{x:9,y:10},{x:8,y:10}];
-    dir = {x:1, y:0};
-    score = 0;
-    tokens = parseInt(localStorage.getItem('snakeTokens') || '0');
-    highScore = parseInt(localStorage.getItem('snakeHigh') || '0');
-    reward = parseInt(localStorage.getItem('snakeReward') || '0');
-    nftUnlocked = localStorage.getItem('snakeNFT') === '1';
-    spawnFood();
-    updateUI();
-  }
-
-  function spawnFood() {
-    do {
-      food = {x: Math.floor(Math.random()*GRID), y: Math.floor(Math.random()*GRID)};
-    } while (snake.some(s => s.x===food.x && s.y===food.y));
-  }
-
-  function startGame() {
-    if (!walletAddress) { setMsg('Connecte ton wallet d\'abord !'); return; }
-    if (running) return;
-    initState();
-    running = true; paused = false;
-    clearInterval(gameLoop);
-    let speed = (currentWeather.condition === 'snow') ? 170 : 130;
-    gameLoop = setInterval(tick, speed);
-    document.getElementById('nftBadge').classList.remove('show');
-    setMsg('');
-    if (foodMoveInterval) clearInterval(foodMoveInterval);
-    if (currentWeather.condition === 'rainy') {
-      foodMoveInterval = setInterval(() => {
-        if (running && !paused) { spawnFood(); draw(); }
-      }, 3000);
-    }
-  }
-
-  function pauseGame() {
-    if (!running) return;
-    paused = !paused;
-    setMsg(paused ? '⏸ Pause — Appuie encore pour reprendre' : '');
-  }
-
-  function resetGame() {
-    clearInterval(gameLoop);
-    if (foodMoveInterval) clearInterval(foodMoveInterval);
-    running = false; paused = false;
-    initState();
-    draw();
-    setMsg('Appuie sur Start pour jouer');
-  }
-
-  async function move() {
-    let dx = dir.x, dy = dir.y;
-    if (invertedControls) { dx = -dx; dy = -dy; }
-    const head = {x: snake[0].x + dx, y: snake[0].y + dy};
-    if (head.x < 0 || head.x >= GRID || head.y < 0 || head.y >= GRID) { gameOver(); return; }
-    if (snake.some(s => s.x===head.x && s.y===head.y)) { gameOver(); return; }
-
-    snake.unshift(head);
-
-    if (head.x===food.x && head.y===food.y) {
-      score++;
-      tokens++;
-      localStorage.setItem('snakeTokens', tokens);
-
-      // ✅ PAS D'APPEL BLOCKCHAIN ICI
-
-      if (score > highScore) {
-        highScore = score;
-        localStorage.setItem('snakeHigh', highScore);
-        updateLeaderboard();
-      }
-
-      if (score >= 10 && !nftUnlocked) {
-        nftUnlocked = true;
-        localStorage.setItem('snakeNFT', '1');
-        document.getElementById('nftBadge').classList.add('show');
-        setMsg('🏆 NFT Reward débloqué ! Score ≥ 10');
-      }
-
-      if (score % 5 === 0) {
-        clearInterval(gameLoop);
-        let spd = (currentWeather.condition === 'snow') ? Math.max(90, 170 - score * 3) : Math.max(60, 130 - score * 5);
-        gameLoop = setInterval(tick, spd);
-      }
-
-      spawnFood();
-      updateUI();
+    // Vérifier réseau
+    const network = await provider.getNetwork();
+    if (network.chainId !== CHAIN_ID) {
+      document.getElementById('networkBadge').innerHTML =
+        '<span style="color:#f87171">⚠ Mauvais réseau — ajoute GenLayer Studionet (ChainID 61999)</span>';
+      setChainMsg('⚠ Ajoute GenLayer Studionet dans MetaMask pour enregistrer le score on-chain');
     } else {
-      snake.pop();
-    }
-  }
-
-  function tick() {
-    if (paused) return;
-    move();
-    draw();
-  }
-
-  async function gameOver() {
-    clearInterval(gameLoop);
-    if (foodMoveInterval) clearInterval(foodMoveInterval);
-    running = false;
-
-    // 🔥 UNE SEULE TRANSACTION À LA FIN
-    if (contract && walletAddress && score > 0) {
-      try {
-        setMsg("📤 Envoi du score final sur la blockchain...");
-        const tx = await contract.submit_score(score);
-        await tx.wait();
-        setMsg(`✅ Score ${score} enregistré sur GenLayer !`);
-        console.log("Score final soumis");
-      } catch(e) {
-        console.error("Erreur submit_score", e);
-        setMsg("❌ Échec de l'enregistrement du score final", true);
-      }
+      document.getElementById('networkBadge').innerHTML =
+        '<span style="color:#10b981">✓ GenLayer Studionet</span>';
     }
 
-    setMsg('💀 Game Over ! Score : ' + score + ' | High : ' + highScore);
-    updateLeaderboard();
-    updateUI();
+    // Init contract
+    contract = new ethers.Contract(CONTRACT_ADDR, ABI, signer);
+    txLog('Wallet connecté: ' + walletAddress);
+    setMsg('Wallet connecté ! Appuie sur Start.');
+
+    // Charger score on-chain
+    await loadOnChainScore();
+
+  } catch(e) {
+    setMsg('Connexion refusée.');
+    console.error(e);
   }
+}
 
-  function draw() {
-    ctx.clearRect(0, 0, 400, 400);
-    ctx.fillStyle = '#0d0d1a';
-    ctx.fillRect(0, 0, 400, 400);
-    ctx.strokeStyle = '#1a1a2e';
-    ctx.lineWidth = 0.5;
-    for (let i = 0; i <= GRID; i++) {
-      ctx.beginPath(); ctx.moveTo(i*CELL, 0); ctx.lineTo(i*CELL, 400); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(0, i*CELL); ctx.lineTo(400, i*CELL); ctx.stroke();
-    }
-    ctx.fillStyle = '#f59e0b';
-    ctx.shadowColor = '#f59e0b';
-    ctx.shadowBlur = 10;
-    ctx.beginPath();
-    ctx.arc(food.x*CELL + CELL/2, food.y*CELL + CELL/2, CELL/2 - 2, 0, Math.PI*2);
-    ctx.fill();
-    ctx.shadowBlur = 0;
-    snake.forEach((seg, i) => {
-      const ratio = 1 - i / snake.length;
-      ctx.fillStyle = i === 0 ? '#a78bfa' : `rgba(109,40,217,${0.3 + ratio*0.6})`;
-      ctx.shadowColor = i === 0 ? '#a78bfa' : 'transparent';
-      ctx.shadowBlur = i === 0 ? 12 : 0;
-      const pad = i === 0 ? 1 : 2;
-      ctx.beginPath();
-      ctx.roundRect(seg.x*CELL + pad, seg.y*CELL + pad, CELL - pad*2, CELL - pad*2, 3);
-      ctx.fill();
-    });
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = '#a78bfa';
-    ctx.font = 'bold 13px Arial';
-    ctx.fillText('Score: ' + score, 8, 18);
-    ctx.fillStyle = '#f59e0b';
-    ctx.fillText('🪙 ' + tokens, 8, 36);
+async function loadOnChainScore() {
+  if (!contract || !walletAddress) { setChainMsg('Connecte ton wallet pour voir le score on-chain'); return; }
+  try {
+    setChainMsg('🔄 Chargement score on-chain...');
+    const s = await contract.get_score(walletAddress);
+    const h = await contract.get_high_score(walletAddress);
+    document.getElementById('dispChain').textContent = h.toString();
+    setChainMsg('✅ High score on-chain : ' + h.toString());
+    txLog('get_score on-chain: ' + s.toString());
+  } catch(e) {
+    setChainMsg('⚠ Impossible de lire le score on-chain');
+    console.error(e);
   }
+}
 
-  function setDir(x, y) {
-    if (invertedControls) { x = -x; y = -y; }
-    if (x===1 && dir.x===-1) return;
-    if (x===-1 && dir.x===1) return;
-    if (y===1 && dir.y===-1) return;
-    if (y===-1 && dir.y===1) return;
-    dir = {x, y};
+async function sendScoreOnChain(finalScore) {
+  if (!contract) { txLog('Pas de contract — score non envoyé'); return; }
+  if (finalScore <= 0) { txLog('Score 0 — pas envoyé'); return; }
+  try {
+    setChainMsg('📤 Envoi du score ' + finalScore + ' sur GenLayer...');
+    txLog('submit_score(' + finalScore + ') envoyé...');
+    const tx = await contract.submit_score(finalScore);
+    txLog('TX hash: ' + tx.hash.slice(0,20) + '...');
+    await tx.wait();
+    setChainMsg('✅ Score ' + finalScore + ' enregistré on-chain !');
+    txLog('✅ TX confirmée !');
+    await loadOnChainScore();
+  } catch(e) {
+    setChainMsg('❌ Échec envoi score: ' + (e.message || '').slice(0,60));
+    txLog('Erreur: ' + (e.message || '').slice(0,80));
+    console.error(e);
   }
+}
 
-  // ---------- Blockchain ----------
-  async function fetchOnChainReward() {
-    if (!contract || !walletAddress) return 0;
-    try {
-      const rewardWei = await contract.get_reward(walletAddress);
-      return Number(rewardWei);
-    } catch(e) { return 0; }
+async function claimReward() {
+  if (!walletAddress) { setMsg('Connecte ton wallet !'); return; }
+  if (score < 5 && highScore < 5) { setMsg('Score trop bas ! Atteins 5 pour claim.'); return; }
+  if (!contract) {
+    // Fallback local
+    const r = Math.max(score, highScore) * 10;
+    setMsg('🎉 ' + r + ' GEN tokens claimés (simulation) !');
+    return;
   }
-
-  async function claimRewardOnChain() {
-    if (!contract || !walletAddress) { setMsg("Wallet non connecté", true); return false; }
-    if (score < 5) { setMsg("Score trop bas (≥5) pour claim", true); return false; }
-    try {
-      setMsg("⏳ Claim en cours...");
-      const tx = await contract.claim_reward();
-      await tx.wait();
-      const newRew = await fetchOnChainReward();
-      reward = newRew;
-      localStorage.setItem('snakeReward', reward);
-      updateUI();
-      setMsg(`🎉 ${reward} GEN réclamés (testnet) !`);
-      return true;
-    } catch(e) {
-      setMsg("❌ Échec claim: " + e.message, true);
-      return false;
-    }
+  try {
+    setChainMsg('📤 Claim reward on-chain...');
+    const tx = await contract.claim_reward();
+    await tx.wait();
+    setChainMsg('✅ Reward claimé on-chain !');
+    txLog('claim_reward confirmé');
+  } catch(e) {
+    setMsg('❌ Erreur claim: ' + (e.message || '').slice(0,50));
+    console.error(e);
   }
+}
 
-  async function connectWallet() {
-    if (typeof window.ethereum === 'undefined') {
-      setMsg('MetaMask non détecté — installe MetaMask ou Rabby !', true);
-      return;
-    }
-    try {
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      walletAddress = accounts[0];
-      document.getElementById('walletAddr').textContent = walletAddress.slice(0,6)+'...'+walletAddress.slice(-4)+' ✓';
-      setMsg('Wallet connecté ! Appuie sur Start.');
+// ══════════════════════════════════════════════
+//  GAME ENGINE
+// ══════════════════════════════════════════════
+function initState() {
+  snake  = [{x:10,y:10},{x:9,y:10},{x:8,y:10}];
+  dir    = {x:1,y:0};
+  score  = 0;
+  tokens = parseInt(localStorage.getItem('snakeTokens') || '0');
+  highScore = parseInt(localStorage.getItem('snakeHigh') || '0');
+  nftUnlocked = localStorage.getItem('snakeNFT') === '1';
+  spawnFood();
+  updateUI();
+}
 
-      provider = new ethers.BrowserProvider(window.ethereum);
-      signer = await provider.getSigner();
-      contract = new ethers.Contract(CONTRACT_ADDR, ABI, signer);
+function spawnFood() {
+  do { food = {x:Math.floor(Math.random()*GRID), y:Math.floor(Math.random()*GRID)}; }
+  while (snake.some(s => s.x===food.x && s.y===food.y));
+}
 
-      const network = await provider.getNetwork();
-      if (Number(network.chainId) !== 61999) {
-        setMsg("⚠️ Attention: réseau incorrect. Passe sur GenLayer Studionet (chainId 61999)", true);
-      }
-
-      const chainRew = await fetchOnChainReward();
-      if (chainRew > 0) {
-        reward = chainRew;
-        localStorage.setItem('snakeReward', reward);
-        updateUI();
-      }
-      updateLeaderboard();
-    } catch (err) {
-      console.error(err);
-      setMsg('Connexion refusée ou erreur: ' + (err.message || err), true);
-    }
-  }
-
-  // ---------- Leaderboard ----------
-  function updateLeaderboard() {
-    const addr = walletAddress ? walletAddress.slice(0,6)+'...'+walletAddress.slice(-4) : 'Joueur';
-    const entry = leaderboard.find(e => e.addr === addr);
-    if (!entry) leaderboard.push({addr, score: highScore});
-    else if (highScore > entry.score) entry.score = highScore;
-    leaderboard.sort((a,b) => b.score - a.score);
-    leaderboard = leaderboard.slice(0,5);
-    localStorage.setItem('snakeLB', JSON.stringify(leaderboard));
-    renderLeaderboard();
-  }
-
-  function renderLeaderboard() {
-    const el = document.getElementById('leaderboard');
-    if (!leaderboard.length) {
-      el.innerHTML = '<div style="font-size:12px;color:#555;text-align:center">Joue pour apparaître ici</div>';
-      return;
-    }
-    const medals = ['🥇','🥈','🥉','4.','5.'];
-    el.innerHTML = leaderboard.map((e,i) => `
-      <div class="lb-row">
-        <span>${medals[i]}</span>
-        <span class="lb-addr">${e.addr}</span>
-        <span class="lb-score">${e.score}</span>
-      </div>
-    `).join('');
-  }
-
-  // ---------- Event listeners ----------
-  document.getElementById('connectBtn').addEventListener('click', connectWallet);
-  document.getElementById('startBtn').addEventListener('click', startGame);
-  document.getElementById('pauseBtn').addEventListener('click', pauseGame);
-  document.getElementById('resetBtn').addEventListener('click', resetGame);
-  document.getElementById('claimBtn').addEventListener('click', claimRewardOnChain);
-
-  document.querySelectorAll('.dir-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const dx = parseInt(btn.getAttribute('data-dx'));
-      const dy = parseInt(btn.getAttribute('data-dy'));
-      if (!isNaN(dx) && !isNaN(dy)) setDir(dx, dy);
-    });
-  });
-
-  document.addEventListener('keydown', e => {
-    const map = {
-      'ArrowUp': [0,-1], 'z': [0,-1],
-      'ArrowDown': [0,1], 's': [0,1],
-      'ArrowLeft': [-1,0], 'q': [-1,0],
-      'ArrowRight': [1,0], 'd': [1,0]
-    };
-    if (map[e.key]) { setDir(...map[e.key]); e.preventDefault(); }
-    if (e.key === ' ') { if (!running) startGame(); else pauseGame(); e.preventDefault(); }
-  });
-
-  // ---------- Initialisation ----------
+function startGame() {
+  if (!walletAddress) { setMsg('Connecte ton wallet d\'abord !'); return; }
+  if (running) return;
   initState();
-  draw();
+  running = true; paused = false;
+  clearInterval(gameLoop);
+  gameLoop = setInterval(tick, 130);
+  document.getElementById('nftBadge').classList.remove('show');
+  setMsg('');
+}
+
+function pauseGame() {
+  if (!running) return;
+  paused = !paused;
+  setMsg(paused ? '⏸ Pause' : '');
+}
+
+function resetGame() {
+  clearInterval(gameLoop);
+  running = false; paused = false;
+  initState(); draw();
+  setMsg('Appuie sur Start pour jouer');
+}
+
+function tick() { if (!paused) { move(); draw(); } }
+
+function move() {
+  const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
+  if (head.x<0||head.x>=GRID||head.y<0||head.y>=GRID) { gameOver(); return; }
+  if (snake.some(s=>s.x===head.x&&s.y===head.y))       { gameOver(); return; }
+  snake.unshift(head);
+  if (head.x===food.x && head.y===food.y) {
+    score++; tokens++;
+    localStorage.setItem('snakeTokens', tokens);
+    if (score > highScore) {
+      highScore = score;
+      localStorage.setItem('snakeHigh', highScore);
+      updateLeaderboard();
+    }
+    if (score >= 10 && !nftUnlocked) {
+      nftUnlocked = true;
+      localStorage.setItem('snakeNFT','1');
+      document.getElementById('nftBadge').classList.add('show');
+      setMsg('🏆 NFT Reward débloqué !');
+    }
+    if (score % 5 === 0) {
+      clearInterval(gameLoop);
+      gameLoop = setInterval(tick, Math.max(60, 130 - score*4));
+    }
+    spawnFood(); updateUI();
+  } else { snake.pop(); }
+}
+
+async function gameOver() {
+  clearInterval(gameLoop);
+  running = false;
+  console.log('Game Over — score final:', score);
+  updateLeaderboard();
+  setMsg('💀 Game Over ! Score : ' + score + ' | Best : ' + highScore);
+  updateUI();
+  // Envoyer score on-chain
+  if (score > 0) await sendScoreOnChain(score);
+}
+
+// ══════════════════════════════════════════════
+//  DRAW
+// ══════════════════════════════════════════════
+function draw() {
+  ctx.clearRect(0,0,400,400);
+  ctx.fillStyle='#0d0d1a'; ctx.fillRect(0,0,400,400);
+  // grille
+  ctx.strokeStyle='#1a1a2e'; ctx.lineWidth=0.5;
+  for(let i=0;i<=GRID;i++){
+    ctx.beginPath();ctx.moveTo(i*CELL,0);ctx.lineTo(i*CELL,400);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,i*CELL);ctx.lineTo(400,i*CELL);ctx.stroke();
+  }
+  // nourriture
+  ctx.fillStyle='#f59e0b'; ctx.shadowColor='#f59e0b'; ctx.shadowBlur=10;
+  ctx.beginPath();ctx.arc(food.x*CELL+CELL/2,food.y*CELL+CELL/2,CELL/2-2,0,Math.PI*2);ctx.fill();
+  ctx.shadowBlur=0;
+  // serpent
+  snake.forEach((seg,i)=>{
+    const r=1-i/snake.length;
+    ctx.fillStyle=i===0?'#a78bfa':`rgba(109,40,217,${0.3+r*0.6})`;
+    ctx.shadowColor=i===0?'#a78bfa':'transparent';
+    ctx.shadowBlur=i===0?12:0;
+    const p=i===0?1:2;
+    ctx.beginPath();ctx.roundRect(seg.x*CELL+p,seg.y*CELL+p,CELL-p*2,CELL-p*2,3);ctx.fill();
+  });
+  ctx.shadowBlur=0;
+  // HUD
+  ctx.fillStyle='#a78bfa'; ctx.font='bold 12px Arial';
+  ctx.fillText('Score: '+score,8,16);
+  ctx.fillStyle='#f59e0b';
+  ctx.fillText('Tokens: '+tokens,8,32);
+  ctx.fillStyle='#38bdf8';
+  ctx.fillText('On-chain: '+document.getElementById('dispChain').textContent,8,48);
+}
+
+// ══════════════════════════════════════════════
+//  UI HELPERS
+// ══════════════════════════════════════════════
+function setDir(x,y){
+  if(x===1&&dir.x===-1)return; if(x===-1&&dir.x===1)return;
+  if(y===1&&dir.y===-1)return; if(y===-1&&dir.y===1)return;
+  dir={x,y};
+}
+document.addEventListener('keydown',e=>{
+  const m={'ArrowUp':[0,-1],'z':[0,-1],'ArrowDown':[0,1],'s':[0,1],
+           'ArrowLeft':[-1,0],'q':[-1,0],'ArrowRight':[1,0],'d':[1,0]};
+  if(m[e.key]){setDir(...m[e.key]);e.preventDefault();}
+  if(e.key===' '){(!running?startGame():pauseGame());e.preventDefault();}
+});
+function updateUI(){
+  document.getElementById('dispScore').textContent=score;
+  document.getElementById('dispHigh').textContent=highScore;
+  document.getElementById('dispTokens').textContent=tokens;
+  if(nftUnlocked)document.getElementById('nftBadge').classList.add('show');
+}
+function setMsg(m){document.getElementById('msg').textContent=m;}
+function setChainMsg(m){document.getElementById('chainMsg').textContent=m;}
+function txLog(m){
+  const el=document.getElementById('txLog');
+  el.textContent+='\n'+new Date().toLocaleTimeString()+' > '+m;
+  el.scrollTop=el.scrollHeight;
+}
+function updateLeaderboard(){
+  const addr=walletAddress?walletAddress.slice(0,6)+'...'+walletAddress.slice(-4):'Joueur';
+  const e=leaderboard.find(x=>x.addr===addr);
+  if(!e)leaderboard.push({addr,score:highScore});
+  else if(highScore>e.score)e.score=highScore;
+  leaderboard.sort((a,b)=>b.score-a.score);
+  leaderboard=leaderboard.slice(0,5);
+  localStorage.setItem('snakeLB',JSON.stringify(leaderboard));
   renderLeaderboard();
-  setMsg('Connecte ton wallet puis appuie sur Start');
-  fetchWeather();
-  weatherInterval = setInterval(fetchWeather, 60000);
+}
+function renderLeaderboard(){
+  const el=document.getElementById('leaderboard');
+  if(!leaderboard.length){el.innerHTML='<div style="font-size:11px;color:#555;text-align:center">Joue pour apparaître ici</div>';return;}
+  const medals=['🥇','🥈','🥉','4.','5.'];
+  el.innerHTML=leaderboard.map((e,i)=>
+    `<div class="lb-row"><span>${medals[i]}</span><span class="lb-addr">${e.addr}</span><span class="lb-score">${e.score}</span></div>`
+  ).join('');
+}
+
+// ══════════════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════════════
+initState(); draw(); renderLeaderboard();
+setMsg('Connecte ton wallet puis appuie sur Start');
 </script>
 </body>
 </html>
