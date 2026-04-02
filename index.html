@@ -22,6 +22,13 @@
   <h1>🐍 SNAKE WEB3 PRO</h1>
   <div class="ui">
     <button id="connectBtn">1. CONNECTER WALLET</button>
+    // ▶️ START
+function startGame() {
+  if (!walletAddress) {
+    alert("Connect wallet first 🔗")
+    return
+  }
+  init()
     <button id="saveBtn">2. SAUVEGARDER SCORE ON-CHAIN</button>
     <p>Score : <span id="score">0</span> | Statut : <span id="status">Prêt</span></p>
   </div>
