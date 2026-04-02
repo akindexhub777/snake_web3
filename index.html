@@ -19,6 +19,14 @@
 
 <p>Score: <span id="score">0</span></p>
 
+<h2>🏆 Leaderboard</h2>
+<button onclick="loadLeaderboard()">Load Leaderboard</button>
+<ul id="leaderboard"></ul>
+
+<h2>💰 Reward</h2>
+<button onclick="claimReward()">Claim Reward</button>
+<p id="reward">0</p>
+
 <canvas id="game" width="400" height="400"></canvas>
 
 <script>
@@ -31,27 +39,18 @@ let walletAddress = null
 // 🔗 CONNECT WALLET
 async function connectWallet() {
   if (window.ethereum) {
-    try {
-      const accounts = await window.ethereum.request({
-        method: 'eth_requestAccounts'
-      })
-
-      walletAddress = accounts[0]
-
-      document.getElementById("wallet").innerText =
-        "Connected: " + walletAddress
-
-      console.log("Wallet connected:", walletAddress)
-
-    } catch (error) {
-      alert("Connection refused")
-    }
+    const accounts = await window.ethereum.request({
+      method: 'eth_requestAccounts'
+    })
+    walletAddress = accounts[0]
+    document.getElementById("wallet").innerText =
+      "Connected: " + walletAddress
   } else {
     alert("Install MetaMask or Rabby Wallet")
   }
 }
 
-// 🎮 INIT GAME
+// 🎮 INIT
 function init() {
   snake = [{x:10,y:10}]
   food = {x:5,y:5}
@@ -62,15 +61,13 @@ function init() {
   document.getElementById("score").innerText = score
 }
 
-// 🎮 START GAME
+// ▶️ START
 function startGame() {
   if (!walletAddress) {
     alert("Connect wallet first 🔗")
     return
   }
-
   init()
-  console.log("Game started (Web3)")
 }
 
 // 🎮 CONTROLS
@@ -87,13 +84,11 @@ function gameLoop() {
 
   let head = {x: snake[0].x + dx, y: snake[0].y + dy}
 
-  // 💀 collision mur
   if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20) {
     endGame()
     return
   }
 
-  // 💀 collision snake
   for (let s of snake) {
     if (s.x === head.x && s.y === head.y) {
       endGame()
@@ -103,12 +98,11 @@ function gameLoop() {
 
   snake.unshift(head)
 
-  // 🍎 manger
   if (head.x === food.x && head.y === food.y) {
     score++
     document.getElementById("score").innerText = score
 
-    eatFood()
+    sendScoreToBlockchain()
 
     food = {
       x: Math.floor(Math.random()*20),
@@ -136,12 +130,48 @@ function draw() {
 // 💀 GAME OVER
 function endGame() {
   gameOver = true
-  alert("💀 Game Over!\nScore: " + score)
+  alert("💀 Game Over! Score: " + score)
 }
 
-// 🔗 WEB3 ACTION
-function eatFood() {
-  console.log("🍎 Score saved on blockchain:", score, "Wallet:", walletAddress)
+// 🔗 WEB3 SIMULATION
+function sendScoreToBlockchain() {
+  console.log("Score saved on blockchain:", score)
+}
+
+// 🏆 LEADERBOARD
+function loadLeaderboard() {
+  const fakeData = [
+    {player: "0xAAA...111", score: 10},
+    {player: "0xBBB...222", score: 7},
+    {player: "0xCCC...333", score: 5}
+  ]
+
+  const list = document.getElementById("leaderboard")
+  list.innerHTML = ""
+
+  fakeData.forEach(p => {
+    const li = document.createElement("li")
+    li.innerText = p.player + " → " + p.score
+    list.appendChild(li)
+  })
+}
+
+// 💰 REWARD
+function claimReward() {
+  if (!walletAddress) {
+    alert("Connect wallet first")
+    return
+  }
+
+  if (score < 5) {
+    alert("Score too low! Reach 5 to claim reward")
+    return
+  }
+
+  let reward = score * 10
+  document.getElementById("reward").innerText = reward
+
+  alert("🎉 Reward claimed: " + reward + " GEN (testnet)")
 }
 
 init()
