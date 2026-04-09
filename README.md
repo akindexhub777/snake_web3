@@ -14,7 +14,7 @@ A classic Snake game, but every round is recorded on the GenLayer blockchain the
 
 ##  How does it work?
 
-1. The player connects their wallet (MetaMask) to the **GenLayer Studionet** network.
+1. The player connects their wallet (MetaMask) to the **GenLayer Studio** network.
 
 2. The player presses **Start** – a `start_game` transaction is sent, which generates a game theme using AI.
 
@@ -26,7 +26,7 @@ A classic Snake game, but every round is recorded on the GenLayer blockchain the
 
 6. Technologies used 
 
-7. **Smart contract** | GenLayer (Python) – deployed on Studionet |
+7. **Smart contract** | GenLayer (Python) – deployed on Studio |
 
 | **Frontend** | HTML5, CSS3, JavaScript (Vanilla) |
 
