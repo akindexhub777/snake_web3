@@ -35,3 +35,4 @@ A classic Snake game, but every round is recorded on the GenLayer blockchain the
 | **Hosting** | GitHub Pages
 Online demo Local installation (for development)
 
+https://studio.genlayer.com/?import-contract=0x848EC8FD00d5d0B933ac697fdf1621AE5CD37cE4
